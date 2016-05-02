@@ -1,6 +1,7 @@
 # PostGraphQL
 
-[![Join the chat at https://gitter.im/calebmer/postgraphql](https://badges.gitter.im/calebmer/postgraphql.svg)](https://gitter.im/calebmer/postgraphql?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Package on npm](https://img.shields.io/npm/v/postgraphql.svg?style=flat)](https://www.npmjs.com/package/postgraphql)
+[![Gitter chat room](https://badges.gitter.im/calebmer/postgraphql.svg)](https://gitter.im/calebmer/postgraphql?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 *A GraphQL schema created by reflection over a PostgreSQL schema.*
 
@@ -33,8 +34,7 @@ For more information run:
 postgraphql --help
 ```
 
-## Example
-Check out the [forum example][] for a demo of PostGraphQL.
+Check out the **[forum example][]** for a demo of PostGraphQL in action.
 
 [forum example]: https://github.com/calebmer/postgraphql/tree/master/examples/forum
 
@@ -117,9 +117,22 @@ Will let you reflect on the schema and get the JSON below:
 
 Just navigate with your browser to the URL printed to your console after starting PostGraphQL and use GraphiQL with your data! Even if you don’t want to use GraphQL in your app, this is a great interface for working with any PostgreSQL database.
 
-Just remember to use the `--development` when starting PostGraphQL!
+Just remember to use the `--development` flag when starting PostGraphQL!
 
 [graphiql]: https://github.com/graphql/graphiql
+
+### Token Based Authorization
+PostGraphQL let’s you use token based authentication with [JSON Web Tokens][jwt] (JWT) to secure your API. It doesn’t make sense to redefine your authentication in the API layer, instead just put your authorization logic in the database schema! With an advanced [grants][grants] system and [row level security][row-level-security], authorization in PostgreSQL is more than enough for your needs.
+
+PostGraphQL follows the [PostgreSQL JSON Web Token Serialization Specification][pg-jwt-spec] for serializing JWTs to the database for your use in authorization. The `role` claim of your JWT will become your PostgreSQL role and all other claims can be found under the `jwt.claims` namespace (see [retrieving claims in PostgreSQL][retrieving-claims]).
+
+To enable token based authorization use the `--secret <string>` command line argument with a secure string PostGraphQL will use to sign and verify tokens. And if you don’t want authorization, just don’t set the `--secret` argument and PostGraphQL will ignore all authorization information!
+
+[jwt]: https://jwt.io
+[grants]: http://www.postgresql.org/docs/current/static/sql-grant.html
+[row-level-security]: http://www.postgresql.org/docs/current/static/ddl-rowsecurity.html
+[pg-jwt-spec]: https://github.com/calebmer/postgraphql/blob/master/docs/pg-jwt-spec.md
+[retrieving-claims]: https://github.com/calebmer/postgraphql/blob/master/docs/pg-jwt-spec.md#retrieving-claims-in-postgresql
 
 ### Cursor Based Pagination For Free
 There are some problems with traditional limit/offset pagination and realtime data. For more information on such problems, read [this article][pagination-for-graphql].
@@ -129,7 +142,7 @@ PostGraphQL not only provides limit/offset pagination, but it also provides curs
 [pagination-for-graphql]: https://medium.com/apollo-stack/understanding-pagination-rest-graphql-and-relay-b10f835549e7#.8ehp4qwsq
 
 ### Relay Specification Compliant
-You don’t have to use GraphQL with React and Relay, but if you are PostGraphQL implements the brilliant Relay specifications for GraphQL. Even if you are not using Relay your project will benefit from having these strong, well thought out specifications implemented by PostGraphQL.
+You don’t have to use GraphQL with React and Relay, but if you are, PostGraphQL implements the brilliant Relay specifications for GraphQL. Even if you are not using Relay your project will benefit from having these strong, well thought out specifications implemented by PostGraphQL.
 
 The specific specs PostGraphQL implements are:
 
@@ -161,7 +174,7 @@ How is it simple? Well first of all, your PostgreSQL schema is still your Postgr
 Ideally PostGraphQL scales with your company and we would appreciate your contributions to help it scale, however there is a simple exit path even years into the business.
 
 ### Schema Driven APIs
-If you fundamentally disagree with a one-to-one mapping of a SQL schema to an API (GraphQL or otherwise) this section is for you. First of all, PostGraphQL is not necessarily meant to be a permanent solution. PostGraphQL was created to allow you to focus on your product and not the API. If you want a custom API there is a simple transition path (read [no lock in](#no-lock-on)). If you still can’t get over the one-to-one nature of PostGraphQL consider the following arguments why putting your business logic in PostgreSQL is a good idea:
+If you fundamentally disagree with a one-to-one mapping of a SQL schema to an API (GraphQL or otherwise) this section is for you. First of all, PostGraphQL is not necessarily meant to be a permanent solution. PostGraphQL was created to allow you to focus on your product and not the API. If you want a custom API there is a simple transition path (read [no lock in](#no-lock-in)). If you still can’t get over the one-to-one nature of PostGraphQL consider the following arguments why putting your business logic in PostgreSQL is a good idea:
 
 1. PostgreSQL already has a powerful [user management system][user-management] with fine grained [row level security][row-level-security]. A custom API would mean you have to build your own user management and security.
 2. PostgreSQL allows you to hide implementation details with [views][pg-views] of your data. Simple views can even be [auto-updatable][pg-udpatable-views]. This provides you with the same freedom and flexibility as you might want from a custom API except more performant.
@@ -181,6 +194,9 @@ Still worried about a certain aspect of a schema driven API? Open an issue, conf
 [node-pg-notify]: https://www.npmjs.com/package/pg-pubsub
 
 * * *
+
+## Thanks
+Thanks so much to the people working on [PostgREST](https://github.com/begriffs/postgrest) which was definetly a huge inspiration for this project! The core contributors are awesome and taught me so much 😊. Ironically, they also convinced me that GraphQL was superior to REST…
 
 Enjoy this server? Want updates and seeing what I’m up to next? Follow me on Twitter [`@calebmer`](https://twitter.com/calebmer).
 
